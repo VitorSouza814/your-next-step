@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1790634465619,
+      "tag": "0000_create_prospecting_accounts",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790634494245,
+      "tag": "0001_lock_account_and_search_columns",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790634653562,
+      "tag": "0002_restrict_ticket_reply_permissions",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1790634677759,
+      "tag": "0003_assign_first_account_admin",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790634690487,
+      "tag": "0004_require_explicit_support_admin",
+      "breakpoints": true
+    }
+  ]
+}
