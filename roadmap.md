@@ -1,4 +1,4 @@
-- [ ] Conta e créditos protegidos; busca debitada e histórico persistido
-- [ ] Painel, busca e carteira com oportunidades e exportação
-- [ ] Chamados, assinatura informativa e configurações
-- [ ] Verificar experiência e segurança
+- [x] Conta e créditos protegidos; busca debitada e histórico persistido
+- [x] Painel, busca e carteira com oportunidades e exportação
+- [x] Chamados, assinatura informativa e configurações
+- [x] Verificar experiência e segurança
