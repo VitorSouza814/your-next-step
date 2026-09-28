@@ -14,13 +14,188 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      accounts: {
+        Row: {
+          created_at: string
+          credits: number
+          display_name: string
+          notify_email: boolean
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          credits?: number
+          display_name?: string
+          notify_email?: boolean
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          credits?: number
+          display_name?: string
+          notify_email?: boolean
+          user_id?: string
+        }
+        Relationships: []
+      }
+      saved_leads: {
+        Row: {
+          address: string
+          contacted_at: string | null
+          created_at: string
+          email: string | null
+          google_opportunity: boolean
+          id: string
+          maps_url: string | null
+          name: string
+          notes: string
+          phone: string | null
+          place_id: string
+          rating: number | null
+          reviews: number | null
+          sector: string | null
+          status: string
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          address?: string
+          contacted_at?: string | null
+          created_at?: string
+          email?: string | null
+          google_opportunity?: boolean
+          id?: string
+          maps_url?: string | null
+          name: string
+          notes?: string
+          phone?: string | null
+          place_id: string
+          rating?: number | null
+          reviews?: number | null
+          sector?: string | null
+          status?: string
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          address?: string
+          contacted_at?: string | null
+          created_at?: string
+          email?: string | null
+          google_opportunity?: boolean
+          id?: string
+          maps_url?: string | null
+          name?: string
+          notes?: string
+          phone?: string | null
+          place_id?: string
+          rating?: number | null
+          reviews?: number | null
+          sector?: string | null
+          status?: string
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      searches: {
+        Row: {
+          city: string
+          created_at: string
+          id: string
+          results: Json
+          sector: string
+          status: string
+          total: number
+          user_id: string
+          without_site: number
+        }
+        Insert: {
+          city: string
+          created_at?: string
+          id?: string
+          results?: Json
+          sector: string
+          status?: string
+          total?: number
+          user_id: string
+          without_site?: number
+        }
+        Update: {
+          city?: string
+          created_at?: string
+          id?: string
+          results?: Json
+          sector?: string
+          status?: string
+          total?: number
+          user_id?: string
+          without_site?: number
+        }
+        Relationships: []
+      }
+      tickets: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          reply: string | null
+          status: string
+          subject: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          reply?: string | null
+          status?: string
+          subject: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          reply?: string | null
+          status?: string
+          subject?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      consume_search: {
+        Args: { p_city: string; p_sector: string }
+        Returns: string
+      }
+      finish_search: {
+        Args: { p_id: string; p_results: Json; p_success: boolean }
+        Returns: undefined
+      }
+      has_role: { Args: { _role: string; _user_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
