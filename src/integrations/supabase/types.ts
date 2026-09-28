@@ -191,6 +191,22 @@ export type Database = {
         Args: { p_city: string; p_sector: string }
         Returns: string
       }
+      ensure_account: {
+        Args: never
+        Returns: {
+          created_at: string
+          credits: number
+          display_name: string
+          notify_email: boolean
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "accounts"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       finish_search: {
         Args: { p_id: string; p_results: Json; p_success: boolean }
         Returns: undefined
