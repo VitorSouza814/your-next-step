@@ -15,6 +15,13 @@
       "when": 1790634494245,
       "tag": "0001_lock_account_and_search_columns",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790634653562,
+      "tag": "0002_restrict_ticket_reply_permissions",
+      "breakpoints": true
     }
   ]
 }
