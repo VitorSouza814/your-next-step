@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       accounts: {
         Row: {
+          auto_crm: boolean
           created_at: string
           credits: number
           display_name: string
@@ -23,6 +24,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          auto_crm?: boolean
           created_at?: string
           credits?: number
           display_name?: string
@@ -30,6 +32,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          auto_crm?: boolean
           created_at?: string
           credits?: number
           display_name?: string
@@ -38,11 +41,212 @@ export type Database = {
         }
         Relationships: []
       }
+      crm_activities: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          detail: string
+          due_at: string | null
+          id: string
+          kind: string
+          opportunity_id: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          detail: string
+          due_at?: string | null
+          id?: string
+          kind: string
+          opportunity_id: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          detail?: string
+          due_at?: string | null
+          id?: string
+          kind?: string
+          opportunity_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_activities_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      finance_entries: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string
+          direction: string
+          due_at: string | null
+          id: string
+          opportunity_id: string | null
+          paid_at: string | null
+          recurring: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          description: string
+          direction: string
+          due_at?: string | null
+          id?: string
+          opportunity_id?: string | null
+          paid_at?: string | null
+          recurring?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string
+          direction?: string
+          due_at?: string | null
+          id?: string
+          opportunity_id?: string | null
+          paid_at?: string | null
+          recurring?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "finance_entries_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      opportunities: {
+        Row: {
+          analysis_status: string
+          closed_at: string | null
+          confidence: string | null
+          created_at: string
+          diagnosis: string | null
+          id: string
+          lead_id: string
+          next_action: string | null
+          next_action_at: string | null
+          owner_name: string | null
+          priority: string
+          proposed_monthly: number | null
+          proposed_oneoff: number | null
+          score: number | null
+          service_id: string | null
+          stage_id: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          analysis_status?: string
+          closed_at?: string | null
+          confidence?: string | null
+          created_at?: string
+          diagnosis?: string | null
+          id?: string
+          lead_id: string
+          next_action?: string | null
+          next_action_at?: string | null
+          owner_name?: string | null
+          priority?: string
+          proposed_monthly?: number | null
+          proposed_oneoff?: number | null
+          score?: number | null
+          service_id?: string | null
+          stage_id?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          analysis_status?: string
+          closed_at?: string | null
+          confidence?: string | null
+          created_at?: string
+          diagnosis?: string | null
+          id?: string
+          lead_id?: string
+          next_action?: string | null
+          next_action_at?: string | null
+          owner_name?: string | null
+          priority?: string
+          proposed_monthly?: number | null
+          proposed_oneoff?: number | null
+          score?: number | null
+          service_id?: string | null
+          stage_id?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "opportunities_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "saved_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "opportunities_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "opportunities_stage_id_fkey"
+            columns: ["stage_id"]
+            isOneToOne: false
+            referencedRelation: "pipeline_stages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pipeline_stages: {
+        Row: {
+          id: string
+          kind: string
+          label: string
+          sort_order: number
+          user_id: string | null
+        }
+        Insert: {
+          id: string
+          kind?: string
+          label: string
+          sort_order: number
+          user_id?: string | null
+        }
+        Update: {
+          id?: string
+          kind?: string
+          label?: string
+          sort_order?: number
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       saved_leads: {
         Row: {
           address: string
           contacted_at: string | null
           created_at: string
+          do_not_contact: boolean
           email: string | null
           google_opportunity: boolean
           id: string
@@ -52,6 +256,7 @@ export type Database = {
           phone: string | null
           place_id: string
           rating: number | null
+          review_needed: boolean
           reviews: number | null
           sector: string | null
           status: string
@@ -62,6 +267,7 @@ export type Database = {
           address?: string
           contacted_at?: string | null
           created_at?: string
+          do_not_contact?: boolean
           email?: string | null
           google_opportunity?: boolean
           id?: string
@@ -71,6 +277,7 @@ export type Database = {
           phone?: string | null
           place_id: string
           rating?: number | null
+          review_needed?: boolean
           reviews?: number | null
           sector?: string | null
           status?: string
@@ -81,6 +288,7 @@ export type Database = {
           address?: string
           contacted_at?: string | null
           created_at?: string
+          do_not_contact?: boolean
           email?: string | null
           google_opportunity?: boolean
           id?: string
@@ -90,6 +298,7 @@ export type Database = {
           phone?: string | null
           place_id?: string
           rating?: number | null
+          review_needed?: boolean
           reviews?: number | null
           sector?: string | null
           status?: string
@@ -97,6 +306,39 @@ export type Database = {
           website?: string | null
         }
         Relationships: []
+      }
+      search_leads: {
+        Row: {
+          lead_id: string
+          search_id: string
+          user_id: string
+        }
+        Insert: {
+          lead_id: string
+          search_id: string
+          user_id: string
+        }
+        Update: {
+          lead_id?: string
+          search_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "search_leads_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "saved_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "search_leads_search_id_fkey"
+            columns: ["search_id"]
+            isOneToOne: false
+            referencedRelation: "searches"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       searches: {
         Row: {
@@ -131,6 +373,33 @@ export type Database = {
           total?: number
           user_id?: string
           without_site?: number
+        }
+        Relationships: []
+      }
+      services: {
+        Row: {
+          active: boolean
+          created_at: string
+          description: string
+          id: string
+          name: string
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          description?: string
+          id?: string
+          name: string
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          description?: string
+          id?: string
+          name?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -194,6 +463,7 @@ export type Database = {
       ensure_account: {
         Args: never
         Returns: {
+          auto_crm: boolean
           created_at: string
           credits: number
           display_name: string
@@ -212,6 +482,10 @@ export type Database = {
         Returns: undefined
       }
       has_role: { Args: { _role: string; _user_id: string }; Returns: boolean }
+      import_search_to_crm: {
+        Args: { p_place_ids?: string[]; p_search_id: string }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never
