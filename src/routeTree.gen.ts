@@ -13,11 +13,18 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AssinaturaRouteImport } from './routes/assinatura'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BuscarRouteImport } from './routes/buscar'
+import { Route as ClientesRouteImport } from './routes/clientes'
 import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
+import { Route as CrmRouteImport } from './routes/crm'
 import { Route as ExportacoesRouteImport } from './routes/exportacoes'
 import { Route as HistoricoRouteImport } from './routes/historico'
 import { Route as SalvosRouteImport } from './routes/salvos'
+import { Route as ServicosRouteImport } from './routes/servicos'
 import { Route as SuporteRouteImport } from './routes/suporte'
+import { Route as FinanceiroIndexRouteImport } from './routes/financeiro/index'
+import { Route as FinanceiroEntradasRouteImport } from './routes/financeiro/entradas'
+import { Route as FinanceiroRecorrenciasRouteImport } from './routes/financeiro/recorrencias'
+import { Route as FinanceiroSaidasRouteImport } from './routes/financeiro/saidas'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -39,9 +46,19 @@ const BuscarRoute = BuscarRouteImport.update({
   path: '/buscar',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ClientesRoute = ClientesRouteImport.update({
+  id: '/clientes',
+  path: '/clientes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
   id: '/configuracoes',
   path: '/configuracoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CrmRoute = CrmRouteImport.update({
+  id: '/crm',
+  path: '/crm',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExportacoesRoute = ExportacoesRouteImport.update({
@@ -59,9 +76,34 @@ const SalvosRoute = SalvosRouteImport.update({
   path: '/salvos',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ServicosRoute = ServicosRouteImport.update({
+  id: '/servicos',
+  path: '/servicos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SuporteRoute = SuporteRouteImport.update({
   id: '/suporte',
   path: '/suporte',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FinanceiroIndexRoute = FinanceiroIndexRouteImport.update({
+  id: '/financeiro/',
+  path: '/financeiro/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FinanceiroEntradasRoute = FinanceiroEntradasRouteImport.update({
+  id: '/financeiro/entradas',
+  path: '/financeiro/entradas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FinanceiroRecorrenciasRoute = FinanceiroRecorrenciasRouteImport.update({
+  id: '/financeiro/recorrencias',
+  path: '/financeiro/recorrencias',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FinanceiroSaidasRoute = FinanceiroSaidasRouteImport.update({
+  id: '/financeiro/saidas',
+  path: '/financeiro/saidas',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -70,22 +112,36 @@ export interface FileRoutesByFullPath {
   '/assinatura': typeof AssinaturaRoute
   '/auth': typeof AuthRoute
   '/buscar': typeof BuscarRoute
+  '/clientes': typeof ClientesRoute
   '/configuracoes': typeof ConfiguracoesRoute
+  '/crm': typeof CrmRoute
   '/exportacoes': typeof ExportacoesRoute
   '/historico': typeof HistoricoRoute
   '/salvos': typeof SalvosRoute
+  '/servicos': typeof ServicosRoute
   '/suporte': typeof SuporteRoute
+  '/financeiro/entradas': typeof FinanceiroEntradasRoute
+  '/financeiro/recorrencias': typeof FinanceiroRecorrenciasRoute
+  '/financeiro/saidas': typeof FinanceiroSaidasRoute
+  '/financeiro/': typeof FinanceiroIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/assinatura': typeof AssinaturaRoute
   '/auth': typeof AuthRoute
   '/buscar': typeof BuscarRoute
+  '/clientes': typeof ClientesRoute
   '/configuracoes': typeof ConfiguracoesRoute
+  '/crm': typeof CrmRoute
   '/exportacoes': typeof ExportacoesRoute
   '/historico': typeof HistoricoRoute
   '/salvos': typeof SalvosRoute
+  '/servicos': typeof ServicosRoute
   '/suporte': typeof SuporteRoute
+  '/financeiro/entradas': typeof FinanceiroEntradasRoute
+  '/financeiro/recorrencias': typeof FinanceiroRecorrenciasRoute
+  '/financeiro/saidas': typeof FinanceiroSaidasRoute
+  '/financeiro': typeof FinanceiroIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -93,11 +149,18 @@ export interface FileRoutesById {
   '/assinatura': typeof AssinaturaRoute
   '/auth': typeof AuthRoute
   '/buscar': typeof BuscarRoute
+  '/clientes': typeof ClientesRoute
   '/configuracoes': typeof ConfiguracoesRoute
+  '/crm': typeof CrmRoute
   '/exportacoes': typeof ExportacoesRoute
   '/historico': typeof HistoricoRoute
   '/salvos': typeof SalvosRoute
+  '/servicos': typeof ServicosRoute
   '/suporte': typeof SuporteRoute
+  '/financeiro/entradas': typeof FinanceiroEntradasRoute
+  '/financeiro/recorrencias': typeof FinanceiroRecorrenciasRoute
+  '/financeiro/saidas': typeof FinanceiroSaidasRoute
+  '/financeiro/': typeof FinanceiroIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -106,33 +169,54 @@ export interface FileRouteTypes {
     | '/assinatura'
     | '/auth'
     | '/buscar'
+    | '/clientes'
     | '/configuracoes'
+    | '/crm'
     | '/exportacoes'
     | '/historico'
     | '/salvos'
+    | '/servicos'
     | '/suporte'
+    | '/financeiro/entradas'
+    | '/financeiro/recorrencias'
+    | '/financeiro/saidas'
+    | '/financeiro/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/assinatura'
     | '/auth'
     | '/buscar'
+    | '/clientes'
     | '/configuracoes'
+    | '/crm'
     | '/exportacoes'
     | '/historico'
     | '/salvos'
+    | '/servicos'
     | '/suporte'
+    | '/financeiro/entradas'
+    | '/financeiro/recorrencias'
+    | '/financeiro/saidas'
+    | '/financeiro'
   id:
     | '__root__'
     | '/'
     | '/assinatura'
     | '/auth'
     | '/buscar'
+    | '/clientes'
     | '/configuracoes'
+    | '/crm'
     | '/exportacoes'
     | '/historico'
     | '/salvos'
+    | '/servicos'
     | '/suporte'
+    | '/financeiro/entradas'
+    | '/financeiro/recorrencias'
+    | '/financeiro/saidas'
+    | '/financeiro/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -140,11 +224,18 @@ export interface RootRouteChildren {
   AssinaturaRoute: typeof AssinaturaRoute
   AuthRoute: typeof AuthRoute
   BuscarRoute: typeof BuscarRoute
+  ClientesRoute: typeof ClientesRoute
   ConfiguracoesRoute: typeof ConfiguracoesRoute
+  CrmRoute: typeof CrmRoute
   ExportacoesRoute: typeof ExportacoesRoute
   HistoricoRoute: typeof HistoricoRoute
   SalvosRoute: typeof SalvosRoute
+  ServicosRoute: typeof ServicosRoute
   SuporteRoute: typeof SuporteRoute
+  FinanceiroEntradasRoute: typeof FinanceiroEntradasRoute
+  FinanceiroRecorrenciasRoute: typeof FinanceiroRecorrenciasRoute
+  FinanceiroSaidasRoute: typeof FinanceiroSaidasRoute
+  FinanceiroIndexRoute: typeof FinanceiroIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -177,11 +268,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BuscarRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/clientes': {
+      id: '/clientes'
+      path: '/clientes'
+      fullPath: '/clientes'
+      preLoaderRoute: typeof ClientesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/configuracoes': {
       id: '/configuracoes'
       path: '/configuracoes'
       fullPath: '/configuracoes'
       preLoaderRoute: typeof ConfiguracoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/crm': {
+      id: '/crm'
+      path: '/crm'
+      fullPath: '/crm'
+      preLoaderRoute: typeof CrmRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/exportacoes': {
@@ -205,11 +310,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SalvosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/servicos': {
+      id: '/servicos'
+      path: '/servicos'
+      fullPath: '/servicos'
+      preLoaderRoute: typeof ServicosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/suporte': {
       id: '/suporte'
       path: '/suporte'
       fullPath: '/suporte'
       preLoaderRoute: typeof SuporteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/financeiro/': {
+      id: '/financeiro/'
+      path: '/financeiro'
+      fullPath: '/financeiro/'
+      preLoaderRoute: typeof FinanceiroIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/financeiro/entradas': {
+      id: '/financeiro/entradas'
+      path: '/financeiro/entradas'
+      fullPath: '/financeiro/entradas'
+      preLoaderRoute: typeof FinanceiroEntradasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/financeiro/recorrencias': {
+      id: '/financeiro/recorrencias'
+      path: '/financeiro/recorrencias'
+      fullPath: '/financeiro/recorrencias'
+      preLoaderRoute: typeof FinanceiroRecorrenciasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/financeiro/saidas': {
+      id: '/financeiro/saidas'
+      path: '/financeiro/saidas'
+      fullPath: '/financeiro/saidas'
+      preLoaderRoute: typeof FinanceiroSaidasRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -220,11 +360,18 @@ const rootRouteChildren: RootRouteChildren = {
   AssinaturaRoute: AssinaturaRoute,
   AuthRoute: AuthRoute,
   BuscarRoute: BuscarRoute,
+  ClientesRoute: ClientesRoute,
   ConfiguracoesRoute: ConfiguracoesRoute,
+  CrmRoute: CrmRoute,
   ExportacoesRoute: ExportacoesRoute,
   HistoricoRoute: HistoricoRoute,
   SalvosRoute: SalvosRoute,
+  ServicosRoute: ServicosRoute,
   SuporteRoute: SuporteRoute,
+  FinanceiroEntradasRoute: FinanceiroEntradasRoute,
+  FinanceiroRecorrenciasRoute: FinanceiroRecorrenciasRoute,
+  FinanceiroSaidasRoute: FinanceiroSaidasRoute,
+  FinanceiroIndexRoute: FinanceiroIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
