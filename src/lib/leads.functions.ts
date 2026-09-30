@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export type LeadResult = { id: string; nome: string; endereco: string; telefone: string | null; site: string | null; email: string | null; nota: number | null; avaliacoes: number | null; mapsUrl: string | null; fotos: number; horario: boolean };
-export type BuscaResposta = { total: number; semSite: number; leads: LeadResult[]; searchId?: string; imported?: { created: number; updated: number; review: number } };
+export type BuscaResposta = { total: number; semSite: number; leads: LeadResult[]; searchId?: string; imported?: { created: number; updated: number; review: number } | undefined };
 type Place = { id?: string; displayName?: { text?: string }; formattedAddress?: string; nationalPhoneNumber?: string; websiteUri?: string; rating?: number; userRatingCount?: number; googleMapsUri?: string; photos?: unknown[]; regularOpeningHours?: unknown };
 const FIELDS = "places.id,places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.websiteUri,places.rating,places.userRatingCount,places.googleMapsUri,places.photos,places.regularOpeningHours,nextPageToken";
 
