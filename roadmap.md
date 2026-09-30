@@ -2,3 +2,6 @@
 - [x] Painel, busca e carteira com oportunidades e exportação
 - [x] Chamados, assinatura informativa e configurações
 - [x] Verificar experiência e segurança
+- [x] Integrar pesquisas novas ao CRM sem importar o histórico automaticamente
+- [x] Criar funil, lista, atividades, clientes, serviços e financeiro
+- [x] Verificar fluxo autenticado de busca até CRM e revisar proteção contra duplicidade e alterações indevidas

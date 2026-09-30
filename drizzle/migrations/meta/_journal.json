@@ -43,6 +43,13 @@
       "when": 1790648180614,
       "tag": "0005_add_crm_finance_and_import",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790772852259,
+      "tag": "0006_harden_crm_search_import",
+      "breakpoints": true
     }
   ]
 }
