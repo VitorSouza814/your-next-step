@@ -1,10 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-export type LeadResult = { id: string; nome: string; endereco: string; telefone: string | null; site: string | null; email: string | null; nota: number | null; avaliacoes: number | null; mapsUrl: string | null; fotos: number; horario: boolean };
+export type LeadResult = { id: string; nome: string; endereco: string; telefone: string | null; site: string | null; email: string | null; nota: number | null; avaliacoes: number | null; mapsUrl: string | null; fotos: number; horario: boolean; businessStatus?: string };
 export type BuscaResposta = { total: number; semSite: number; leads: LeadResult[]; searchId?: string; imported?: { created: number; updated: number; review: number } | undefined };
-type Place = { id?: string; displayName?: { text?: string }; formattedAddress?: string; nationalPhoneNumber?: string; websiteUri?: string; rating?: number; userRatingCount?: number; googleMapsUri?: string; photos?: unknown[]; regularOpeningHours?: unknown };
-const FIELDS = "places.id,places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.websiteUri,places.rating,places.userRatingCount,places.googleMapsUri,places.photos,places.regularOpeningHours,nextPageToken";
+type Place = { id?: string; displayName?: { text?: string }; formattedAddress?: string; nationalPhoneNumber?: string; websiteUri?: string; rating?: number; userRatingCount?: number; googleMapsUri?: string; photos?: unknown[]; regularOpeningHours?: unknown; businessStatus?: string };
+const FIELDS = "places.id,places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.websiteUri,places.rating,places.userRatingCount,places.googleMapsUri,places.photos,places.regularOpeningHours,places.businessStatus,nextPageToken";
 
 export const buscarLeads = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -37,7 +37,7 @@ export const buscarLeads = createServerFn({ method: "POST" })
         if (!json.nextPageToken) break;
         token = json.nextPageToken;
       }
-      leads = places.filter((p) => p.id).map((p) => ({ id: p.id ?? "", nome: p.displayName?.text ?? "Sem nome", endereco: p.formattedAddress ?? "", telefone: p.nationalPhoneNumber ?? null, site: p.websiteUri ?? null, email: null, nota: p.rating ?? null, avaliacoes: p.userRatingCount ?? null, mapsUrl: p.googleMapsUri ?? null, fotos: p.photos?.length ?? 0, horario: Boolean(p.regularOpeningHours) }));
+      leads = places.filter((p) => p.id).map((p) => ({ id: p.id ?? "", nome: p.displayName?.text ?? "Sem nome", endereco: p.formattedAddress ?? "", telefone: p.nationalPhoneNumber ?? null, site: p.websiteUri ?? null, email: null, nota: p.rating ?? null, avaliacoes: p.userRatingCount ?? null, mapsUrl: p.googleMapsUri ?? null, fotos: p.photos?.length ?? 0, horario: Boolean(p.regularOpeningHours), businessStatus: p.businessStatus }));
       success = true;
     } finally {
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
