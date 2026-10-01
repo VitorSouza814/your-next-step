@@ -17,8 +17,8 @@ type Ticket = Database["public"]["Tables"]["tickets"]["Row"];
 type Account = Database["public"]["Tables"]["accounts"]["Row"];
 type Section = "dashboard" | "buscar" | "salvos" | "historico" | "exportacoes" | "assinatura" | "suporte" | "configuracoes" | "crm" | "clientes" | "servicos" | "financeiro" | "entradas" | "saidas" | "recorrencias";
 const nav: { key: Section; path: string; label: string; icon: typeof Search }[] = [
-  { key: "dashboard", path: "/", label: "Dashboard", icon: LayoutDashboard },
-  { key: "financeiro", path: "/financeiro", label: "Visão geral", icon: Wallet },
+  { key: "dashboard", path: "/", label: "Visão geral", icon: LayoutDashboard },
+  { key: "financeiro", path: "/financeiro", label: "Dashboard", icon: LayoutDashboard },
   { key: "entradas", path: "/financeiro/entradas", label: "Entradas", icon: Wallet },
   { key: "saidas", path: "/financeiro/saidas", label: "Saídas", icon: Wallet },
   { key: "recorrencias", path: "/financeiro/recorrencias", label: "Recorrências", icon: Wallet },
@@ -33,7 +33,7 @@ const nav: { key: Section; path: string; label: string; icon: typeof Search }[] 
   { key: "suporte", path: "/suporte", label: "Suporte", icon: LifeBuoy },
   { key: "configuracoes", path: "/configuracoes", label: "Configuração", icon: Settings },
 ];
-const financeKeys: Section[] = ["dashboard", "financeiro", "entradas", "saidas", "recorrencias"];
+const financeKeys: Section[] = ["financeiro", "entradas", "saidas", "recorrencias"];
 const salesKeys: Section[] = ["crm", "buscar", "salvos", "historico", "exportacoes", "clientes", "servicos"];
 const date = (s: string) => new Date(s).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" });
 const csvCell = (v: unknown) => `"${String(v ?? "").replaceAll('"', '""')}"`;
@@ -75,7 +75,7 @@ export function Workspace({ section }: { section: Section }) {
   const [message, setMessage] = useState("");
   const [notice, setNotice] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
-  const [financeOpen, setFinanceOpen] = useState(() => financeKeys.includes(section));
+  const [financeOpen, setFinanceOpen] = useState(() => financeKeys.includes(section) || section === "dashboard");
   async function refresh(id: string) {
     const [a, s, h, t, role, offerings, opportunities] = await Promise.all([
       supabase.rpc("ensure_account"), supabase.from("saved_leads").select("*").eq("user_id", id).order("created_at", { ascending: false }),
@@ -143,7 +143,7 @@ export function Workspace({ section }: { section: Section }) {
   return <div className="min-h-screen bg-background font-body text-foreground lg:flex">
     <aside className={`${menuOpen ? "block" : "hidden"} border-b border-border bg-card lg:sticky lg:top-0 lg:block lg:h-screen lg:w-60 lg:shrink-0 lg:border-b-0 lg:border-r`}>
       <div className="border-b border-border px-5 py-7"><span className="font-display text-xl font-bold uppercase">Gerenciador <span className="text-primary">Avançado</span></span><p className="mt-1 text-xs uppercase text-accent">Prospecção B2B</p></div>
-      <nav className="overflow-y-auto p-3 lg:max-h-[calc(100vh-170px)]" aria-label="Módulos"><Button variant="ghost" aria-expanded={financeOpen} aria-controls="finance-menu" onClick={() => setFinanceOpen(!financeOpen)} className="w-full justify-between px-3 font-display text-base uppercase text-foreground hover:bg-secondary"><span className="flex items-center gap-3"><Wallet size={17}/>Financeiro</span><ChevronDown size={16} className={`transition-transform ${financeOpen ? "rotate-180" : ""}`}/></Button>{financeOpen && <div id="finance-menu" className="ml-3 space-y-1 border-l border-border pl-2">{nav.filter(item => financeKeys.includes(item.key)).map(navLink)}</div>}<div className="mt-5 border-t border-border pt-4"><p className="px-3 pb-2 font-display text-base uppercase text-accent">Vendas</p><div className="space-y-1">{nav.filter(item => salesKeys.includes(item.key)).map(navLink)}</div></div><div className="mt-5 space-y-1 border-t border-border pt-4">{nav.filter(item => !financeKeys.includes(item.key) && !salesKeys.includes(item.key)).map(navLink)}</div></nav>
+      <nav className="overflow-y-auto p-3 lg:max-h-[calc(100vh-170px)]" aria-label="Módulos"><Button variant="ghost" aria-expanded={financeOpen} aria-controls="finance-menu" onClick={() => setFinanceOpen(!financeOpen)} className="w-full justify-between px-3 font-display text-base uppercase text-foreground hover:bg-secondary"><span className="flex items-center gap-3"><Wallet size={17}/>Financeiro</span><ChevronDown size={16} className={`transition-transform ${financeOpen ? "rotate-180" : ""}`}/></Button>{financeOpen && <div id="finance-menu" className="ml-3 space-y-1 border-l border-border pl-2">{nav.filter(item => financeKeys.includes(item.key)).map(navLink)}</div>}<div className="mt-5 border-t border-border pt-4"><p className="px-3 pb-2 font-display text-base uppercase text-accent">Vendas</p><div className="space-y-1">{nav.filter(item => salesKeys.includes(item.key)).map(navLink)}</div></div><div className="mt-5 space-y-1 border-t border-border pt-4">{nav.filter(item => !financeKeys.includes(item.key) && !salesKeys.includes(item.key) && item.key !== "dashboard").map(navLink)}</div></nav>
       <div className="px-5 py-4 text-sm text-accent">{account?.credits ?? "—"} créditos disponíveis</div>
     </aside>
     <main className="min-w-0 flex-1"><header className="flex items-center justify-between gap-3 border-b border-border px-5 py-4 md:px-8"><div className="flex items-center gap-3"><Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setMenuOpen(!menuOpen)} aria-label="Abrir menu"><Menu/></Button><span className="font-display text-lg font-semibold uppercase">{current?.label}</span></div><div className="flex items-center gap-3"><span className="text-sm text-accent">{account?.credits ?? "—"} créditos</span><Button variant="ghost" size="icon" title="Sair" aria-label="Sair" onClick={async () => { await queryClient.cancelQueries(); queryClient.clear(); await supabase.auth.signOut(); navigate({ to: "/auth", replace: true }); }}><LogOut/></Button></div></header>
