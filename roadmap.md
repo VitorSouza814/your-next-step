@@ -5,3 +5,6 @@
 - [x] Integrar pesquisas novas ao CRM sem importar o histórico automaticamente
 - [x] Criar funil, lista, atividades, clientes, serviços e financeiro
 - [x] Verificar fluxo autenticado de busca até CRM e revisar proteção contra duplicidade e alterações indevidas
+- [ ] Separar o menu em Financeiro sanfona, Vendas e demais itens
+- [ ] Tornar a inclusão no CRM exclusivamente manual por empresa, com indicação de empresas já presentes
+- [ ] Conferir menu e inclusão manual na prévia autenticada

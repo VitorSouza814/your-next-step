@@ -8,17 +8,16 @@ const FIELDS = "places.id,places.displayName,places.formattedAddress,places.nati
 
 export const buscarLeads = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { nicho: string; cidade: string; autoCrm?: boolean }) => {
+  .inputValidator((input: { nicho: string; cidade: string }) => {
     const nicho = (input?.nicho ?? "").trim().slice(0, 80);
     const cidade = (input?.cidade ?? "").trim().slice(0, 80);
     if (nicho.length < 2 || cidade.length < 2) throw new Error("Informe o setor e a cidade.");
-    return { nicho, cidade, autoCrm: input.autoCrm !== false };
+    return { nicho, cidade };
   })
   .handler(async ({ data, context }): Promise<BuscaResposta> => {
     const { data: searchId, error: debitError } = await context.supabase.rpc("consume_search", { p_sector: data.nicho, p_city: data.cidade });
     if (debitError || !searchId) throw new Error(debitError?.message.includes("Créditos insuficientes") ? "Créditos insuficientes para buscar." : "Não foi possível iniciar a busca.");
     let success = false;
-    let imported: BuscaResposta["imported"];
     let leads: LeadResult[] = [];
     try {
       const lovableKey = process.env["LOVABLE_API_KEY"];
@@ -44,10 +43,5 @@ export const buscarLeads = createServerFn({ method: "POST" })
       const { error } = await supabaseAdmin.rpc("finish_search", { p_id: searchId, p_results: leads as unknown as import("@/integrations/supabase/types").Json, p_success: success });
       if (error) console.error("Falha ao registrar busca:", error);
     }
-    if (success && data.autoCrm) {
-      const { data: summary, error } = await context.supabase.rpc("import_search_to_crm", { p_search_id: searchId });
-      if (error) console.error("Falha ao enviar leads ao CRM:", error);
-      else imported = summary as BuscaResposta["imported"];
-    }
-    return { total: leads.length, semSite: leads.filter((l) => !l.site).length, leads, searchId, imported };
+    return { total: leads.length, semSite: leads.filter((l) => !l.site).length, leads, searchId };
   });
