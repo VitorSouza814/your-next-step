@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Download, Search, LayoutDashboard, Bookmark, History, CreditCard, LifeBuoy, Settings, LogOut, MessageCircle, ExternalLink, Mail, Menu, KanbanSquare, Users, Briefcase, Wallet } from "lucide-react";
+import { Download, Search, LayoutDashboard, Bookmark, History, CreditCard, LifeBuoy, Settings, LogOut, MessageCircle, ExternalLink, Mail, Menu, KanbanSquare, Users, Briefcase, Wallet, ChevronDown, Plus, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { findLeadEmail } from "@/lib/email.functions";
@@ -18,21 +18,23 @@ type Account = Database["public"]["Tables"]["accounts"]["Row"];
 type Section = "dashboard" | "buscar" | "salvos" | "historico" | "exportacoes" | "assinatura" | "suporte" | "configuracoes" | "crm" | "clientes" | "servicos" | "financeiro" | "entradas" | "saidas" | "recorrencias";
 const nav: { key: Section; path: string; label: string; icon: typeof Search }[] = [
   { key: "dashboard", path: "/", label: "Dashboard", icon: LayoutDashboard },
-  { key: "buscar", path: "/buscar", label: "Buscar leads", icon: Search },
-  { key: "crm", path: "/crm", label: "CRM", icon: KanbanSquare },
-  { key: "clientes", path: "/clientes", label: "Clientes", icon: Users },
-  { key: "servicos", path: "/servicos", label: "Serviços", icon: Briefcase },
-  { key: "financeiro", path: "/financeiro", label: "Financeiro · visão geral", icon: Wallet },
+  { key: "financeiro", path: "/financeiro", label: "Visão geral", icon: Wallet },
   { key: "entradas", path: "/financeiro/entradas", label: "Entradas", icon: Wallet },
   { key: "saidas", path: "/financeiro/saidas", label: "Saídas", icon: Wallet },
   { key: "recorrencias", path: "/financeiro/recorrencias", label: "Recorrências", icon: Wallet },
-  { key: "salvos", path: "/salvos", label: "Leads salvos", icon: Bookmark },
-  { key: "historico", path: "/historico", label: "Histórico de busca", icon: History },
+  { key: "crm", path: "/crm", label: "CRM", icon: KanbanSquare },
+  { key: "buscar", path: "/buscar", label: "Ferramenta de Busca", icon: Search },
+  { key: "salvos", path: "/salvos", label: "Leads Salvos", icon: Bookmark },
+  { key: "historico", path: "/historico", label: "Histórico de Busca", icon: History },
   { key: "exportacoes", path: "/exportacoes", label: "Exportações", icon: Download },
+  { key: "clientes", path: "/clientes", label: "Clientes", icon: Users },
+  { key: "servicos", path: "/servicos", label: "Serviços", icon: Briefcase },
   { key: "assinatura", path: "/assinatura", label: "Assinatura", icon: CreditCard },
   { key: "suporte", path: "/suporte", label: "Suporte", icon: LifeBuoy },
-  { key: "configuracoes", path: "/configuracoes", label: "Configurações", icon: Settings },
+  { key: "configuracoes", path: "/configuracoes", label: "Configuração", icon: Settings },
 ];
+const financeKeys: Section[] = ["dashboard", "financeiro", "entradas", "saidas", "recorrencias"];
+const salesKeys: Section[] = ["crm", "buscar", "salvos", "historico", "exportacoes", "clientes", "servicos"];
 const date = (s: string) => new Date(s).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" });
 const csvCell = (v: unknown) => `"${String(v ?? "").replaceAll('"', '""')}"`;
 function exportCsv(rows: Saved[], name: string) {
@@ -49,12 +51,14 @@ function diagnosis(lead: LeadResult) {
 }
 export function Workspace({ section }: { section: Section }) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const fetchLeads = useServerFn(buscarLeads);
   const lookupEmail = useServerFn(findLeadEmail);
   const [userId, setUserId] = useState<string | null>(null);
   const [authReady, setAuthReady] = useState(false);
   const [account, setAccount] = useState<Account | null>(null);
   const [saved, setSaved] = useState<Saved[]>([]);
+  const [crmPlaceIds, setCrmPlaceIds] = useState<string[]>([]);
   const [services, setServices] = useState<Database["public"]["Tables"]["services"]["Row"][]>([]);
   const [searches, setSearches] = useState<SearchRow[]>([]);
   const [tickets, setTickets] = useState<Ticket[]>([]);
@@ -62,8 +66,8 @@ export function Workspace({ section }: { section: Section }) {
   const [nicho, setNicho] = useState("Clínica odontológica");
   const [cidade, setCidade] = useState("Curitiba, PR");
   const [onlyNoSite, setOnlyNoSite] = useState(false);
-  const [autoCrm, setAutoCrm] = useState(true);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [importingIds, setImportingIds] = useState<string[]>([]);
   const [importPreview, setImportPreview] = useState<string | null>(null);
   const [result, setResult] = useState<BuscaResposta | null>(null);
   useEffect(() => { if (section !== "buscar") return; try { const stored = sessionStorage.getItem("ga-historico-aberto"); if (stored) { const view = JSON.parse(stored) as BuscaResposta & { nicho?: string; cidade?: string }; setResult(view); if (view.nicho) setNicho(view.nicho); if (view.cidade) setCidade(view.cidade); sessionStorage.removeItem("ga-historico-aberto"); } } catch { /* Ignore invalid saved view */ } }, [section]);
@@ -71,14 +75,20 @@ export function Workspace({ section }: { section: Section }) {
   const [message, setMessage] = useState("");
   const [notice, setNotice] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [financeOpen, setFinanceOpen] = useState(() => financeKeys.includes(section));
   async function refresh(id: string) {
-    const [a, s, h, t, role, offerings] = await Promise.all([
+    const [a, s, h, t, role, offerings, opportunities] = await Promise.all([
       supabase.rpc("ensure_account"), supabase.from("saved_leads").select("*").eq("user_id", id).order("created_at", { ascending: false }),
       supabase.from("searches").select("*").eq("user_id", id).order("created_at", { ascending: false }),
       supabase.from("tickets").select("*").order("created_at", { ascending: false }), supabase.rpc("has_role", { _user_id: id, _role: "admin" }), supabase.from("services").select("*").eq("user_id", id).order("created_at", { ascending: false }),
+      supabase.from("opportunities").select("lead_id").eq("user_id", id),
     ]);
-    if (a.data) { setAccount(a.data); setAutoCrm(a.data.auto_crm); }
+    if (a.data) setAccount(a.data);
     if (s.data) setSaved(s.data);
+    if (s.data && opportunities.data) {
+      const opportunityLeadIds = new Set(opportunities.data.map(o => o.lead_id));
+      setCrmPlaceIds(s.data.filter(lead => opportunityLeadIds.has(lead.id)).map(lead => lead.place_id));
+    }
     if (h.data) setSearches(h.data);
     if (t.data) setTickets(t.data);
     if (offerings.data) setServices(offerings.data);
@@ -94,8 +104,19 @@ export function Workspace({ section }: { section: Section }) {
     });
     return () => { live = false; subscription.unsubscribe(); };
   }, []);
-  const search = useMutation({ mutationFn: (args: { nicho: string; cidade: string; autoCrm: boolean }) => fetchLeads({ data: args }), onSuccess: (data) => { setResult(data); setSelectedIds([]); setNotice(data.imported ? `Busca concluída · ${data.imported.created} novos leads no CRM · ${data.imported.updated} já existentes · ${data.imported.review} para revisão.` : "Busca concluída. Se o CRM não foi atualizado, selecione empresas e envie manualmente."); if (userId) void refresh(userId); }, onError: () => { if (userId) void refresh(userId); } });
-  async function importLeads(searchId: string, ids?: string[]) { if (!userId) return; const { data, error } = await supabase.rpc('import_search_to_crm', { p_search_id: searchId, ...(ids ? { p_place_ids: ids } : {}) }); if (error) setNotice('Não foi possível enviar os leads ao CRM.'); else { const summary = data as { created: number; updated: number; review: number }; setNotice(`${summary.created} novos leads · ${summary.updated} existentes · ${summary.review} para revisão.`); setSelectedIds([]); setImportPreview(null); await refresh(userId); } }
+  const search = useMutation({ mutationFn: (args: { nicho: string; cidade: string }) => fetchLeads({ data: args }), onSuccess: (data) => { setResult(data); setSelectedIds([]); setNotice("Busca concluída."); if (userId) void refresh(userId); }, onError: () => { if (userId) void refresh(userId); } });
+  async function importLeads(searchId: string, ids?: string[]) {
+    if (!userId || importingIds.length) return;
+    setImportingIds(ids ?? ["historico"]);
+    try {
+      const { data, error } = await supabase.rpc('import_search_to_crm', { p_search_id: searchId, ...(ids ? { p_place_ids: ids } : {}) });
+      if (error) { setNotice('Não foi possível enviar ao CRM.'); return; }
+      const summary = data as { created: number; updated: number; review: number };
+      setNotice(`${summary.created} novos leads no CRM · ${summary.updated} já existentes · ${summary.review} para revisão.`);
+      setSelectedIds([]); setImportPreview(null);
+      await refresh(userId);
+    } finally { setImportingIds([]); }
+  }
   const visible = useMemo(() => [...(result?.leads ?? [])]
     .filter((lead) => !onlyNoSite || !lead.site)
     .sort((a, b) => Number(Boolean(a.site)) - Number(Boolean(b.site)) || (b.nota ?? -1) - (a.nota ?? -1)), [result, onlyNoSite]);
